@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import { ISite } from '../models/site.model';
-import { createPasswordDTO } from '../models/password.model';
+import {
+  createPasswordDTO,
+  editPasswordDTO,
+  IPassword,
+} from '../models/password.model';
 
 import {
   Firestore,
@@ -56,5 +60,14 @@ export class PasswordManagerService {
       `${this.sitesCollection}/${siteId}/${this.passwordCollection}`
     );
     return collectionData(dbInstance, { idField: 'id' });
+  }
+
+  updatePassword(siteId: string, { id, ...data }: IPassword) {
+    const docInstance = doc(
+      this.firestore,
+      `${this.sitesCollection}/${siteId}/${this.passwordCollection}`,
+      id
+    );
+    return updateDoc(docInstance, data);
   }
 }

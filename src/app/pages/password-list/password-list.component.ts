@@ -6,6 +6,11 @@ import { PasswordManagerService } from '../../services/password-manager.service'
 import { Observable } from 'rxjs';
 import { IPassword } from '../../models/password.model';
 
+enum FormState {
+  Add = 'Add',
+  Edit = 'Edit',
+}
+
 @Component({
   selector: 'app-password-list',
   templateUrl: './password-list.component.html',
@@ -15,11 +20,16 @@ export class PasswordListComponent {
   @ViewChild('myForm') myForm!: NgForm;
   site!: ISite;
   passwordList$!: Observable<IPassword[]>;
+  password: IPassword;
+  formState: FormState;
 
   constructor(
     private route: ActivatedRoute,
     private passwordManagerService: PasswordManagerService
-  ) {}
+  ) {
+    this.password = { id: '', email: '', username: '', password: '' };
+    this.formState = FormState.Add;
+  }
 
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
@@ -35,11 +45,21 @@ export class PasswordListComponent {
     }
 
     try {
-      await this.passwordManagerService.addPassword(
-        this.myForm.value,
-        this.site.id
-      );
-      console.log('Password Saved');
+      if (this.formState == FormState.Add) {
+        await this.passwordManagerService.addPassword(
+          this.myForm.value,
+          this.site.id
+        );
+        console.log('Password Saved');
+      } else {
+        await this.passwordManagerService.updatePassword(
+          this.site.id,
+          this.password
+        );
+        this.formState = FormState.Add;
+        console.log('Password updated');
+      }
+      this.myForm.reset();
     } catch (error) {
       console.error(error);
     }
@@ -51,5 +71,10 @@ export class PasswordListComponent {
         this.site.id
       ) as unknown as Observable<IPassword[]>;
     }
+  }
+
+  editPassword(password: IPassword) {
+    this.password = password;
+    this.formState = FormState.Edit;
   }
 }
