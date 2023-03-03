@@ -26,6 +26,8 @@ export class SiteListComponent implements OnInit {
   };
 
   formState: FormState;
+  isSuccess = false;
+  successMessage: string | undefined;
 
   constructor(private passwordManagerService: PasswordManagerService) {
     this.formState = FormState.Add;
@@ -33,6 +35,11 @@ export class SiteListComponent implements OnInit {
 
   ngOnInit() {
     this.loadSites();
+  }
+
+  showAlert(message: string) {
+    this.isSuccess = true;
+    this.successMessage = message;
   }
 
   async onSubmit() {
@@ -43,15 +50,18 @@ export class SiteListComponent implements OnInit {
       if (this.formState == FormState.Add) {
         await this.passwordManagerService.addSite(this.myForm.value);
         this.myForm.reset();
+        this.showAlert('Data Saved Sucessfully');
         console.log('Data Saved Successfully');
       } else {
         await this.passwordManagerService.updateSite(this.initForm);
         this.myForm.reset();
+        this.showAlert('Data Edit Sucessfully');
         this.formState = FormState.Add;
         console.log('Data Updated Successfully');
       }
     } catch (error) {
       console.error(error);
+      this.isSuccess = false;
     }
   }
 
@@ -68,6 +78,7 @@ export class SiteListComponent implements OnInit {
   async deleteSite(id: string) {
     try {
       await this.passwordManagerService.deleteSite(id);
+      this.showAlert('Data Deleted Sucessfully');
       console.log('Site deleted');
     } catch (error) {
       console.error(error);
