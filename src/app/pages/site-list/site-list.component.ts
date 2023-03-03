@@ -47,6 +47,7 @@ export class SiteListComponent implements OnInit {
       } else {
         await this.passwordManagerService.updateSite(this.initForm);
         this.myForm.reset();
+        this.formState = FormState.Add;
         console.log('Data Updated Successfully');
       }
     } catch (error) {
@@ -62,5 +63,14 @@ export class SiteListComponent implements OnInit {
   editSite(site: editSiteDTO) {
     this.formState = FormState.Edit;
     this.initForm = { ...this.initForm, ...site };
+  }
+
+  async deleteSite(id: string) {
+    try {
+      await this.passwordManagerService.deleteSite(id);
+      console.log('Site deleted');
+    } catch (error) {
+      console.error(error);
+    }
   }
 }

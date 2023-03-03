@@ -8,26 +8,34 @@ import {
   collectionData,
   doc,
   updateDoc,
+  deleteDoc,
 } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PasswordManagerService {
+  private collection = 'sites';
+
   constructor(private firestore: Firestore) {}
 
   addSite(data: ISite) {
-    const dbInstance = collection(this.firestore, 'sites');
-    return addDoc(dbInstance, data);
+    const docInstance = collection(this.firestore, this.collection);
+    return addDoc(docInstance, data);
   }
 
   loadSites() {
-    const dbInstance = collection(this.firestore, 'sites');
-    return collectionData(dbInstance, { idField: 'id' });
+    const docInstance = collection(this.firestore, this.collection);
+    return collectionData(docInstance, { idField: 'id' });
   }
 
   updateSite({ id, ...data }: ISite) {
-    const dbInstance = doc(this.firestore, 'sites', id);
-    return updateDoc(dbInstance, data);
+    const docInstance = doc(this.firestore, this.collection, id);
+    return updateDoc(docInstance, data);
+  }
+
+  deleteSite(id: string) {
+    const docInstance = doc(this.firestore, this.collection, id);
+    return deleteDoc(docInstance);
   }
 }
