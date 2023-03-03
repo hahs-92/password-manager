@@ -15,7 +15,7 @@
     <h2 class="text-3xl text-center">Add New Site</h2>
     <p class="text-center">You can add a new site from the below form</p>
 
-    <form #f="ngForm" (ngSubmit)="onSubmit(f.value)">
+    <form #myForm="ngForm" (ngSubmit)="onSubmit()" autocomplete="off">
       <article class="flex flex-col">
         <label class="text-lg font-medium mb-2">Site Name</label>
         <input
@@ -23,6 +23,7 @@
           type="text"
           name="siteName"
           class="border-2 border-gray-900 p-2 rounded-lg"
+          required
         />
       </article>
 
@@ -33,6 +34,7 @@
           type="text"
           name="siteURL"
           class="border-2 border-gray-900 p-2 rounded-lg"
+          required
         />
       </article>
 
@@ -43,6 +45,7 @@
           type="text"
           name="siteImgURL"
           class="border-2 border-gray-900 p-2 rounded-lg"
+          required
         />
       </article>
 

@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { Observable } from 'rxjs';
+
 import { PasswordManagerService } from '../../services/password-manager.service';
 
 @Component({
@@ -8,6 +10,7 @@ import { PasswordManagerService } from '../../services/password-manager.service'
   styleUrls: ['./site-list.component.css'],
 })
 export class SiteListComponent implements OnInit {
+  @ViewChild('myForm') myForm!: NgForm;
   allSites$!: Observable<any>;
 
   constructor(private passwordManagerService: PasswordManagerService) {}
@@ -16,9 +19,13 @@ export class SiteListComponent implements OnInit {
     this.loadSites();
   }
 
-  async onSubmit(values: object) {
+  async onSubmit() {
+    if (this.myForm.invalid) {
+      return;
+    }
     try {
-      await this.passwordManagerService.addSite(values);
+      await this.passwordManagerService.addSite(this.myForm.value);
+      this.myForm.reset();
       console.log('Data Save Successfully');
     } catch (error) {
       console.error(error);
