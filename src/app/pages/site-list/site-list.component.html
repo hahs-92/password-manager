@@ -1,1 +1,92 @@
-<p>site-list works!</p>
+<div class="container mx-auto my-16">
+  <h1 class="text-5xl mt-0 mb-5">Octacademy Password Manager</h1>
+  <p class="mb-5">
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus non ex
+    provident quisquam asperiores nobis consectetur debitis modi dolorem,
+    commodi.
+  </p>
+  <button
+    class="mb-5 mx-0.5 px-5 py-3 text-sm bg-gray-900 text-white shadow rounded-md"
+  >
+    Add New Site
+  </button>
+
+  <section class="px-20 py-10 mb-10 my-5 border-4 border-gray-900">
+    <h2 class="text-3xl text-center">Add New Site</h2>
+    <p class="text-center">You can add a new site from the below form</p>
+
+    <form #f="ngForm" (ngSubmit)="onSubmit(f.value)">
+      <article class="flex flex-col">
+        <label class="text-lg font-medium mb-2">Site Name</label>
+        <input
+          ngModel
+          type="text"
+          name="siteName"
+          class="border-2 border-gray-900 p-2 rounded-lg"
+        />
+      </article>
+
+      <article class="flex flex-col">
+        <label class="text-lg font-medium mb-2">Site URL</label>
+        <input
+          ngModel
+          type="text"
+          name="siteURL"
+          class="border-2 border-gray-900 p-2 rounded-lg"
+        />
+      </article>
+
+      <article class="flex flex-col">
+        <label class="text-lg font-medium mb-2">Site Image URL</label>
+        <input
+          ngModel
+          type="text"
+          name="siteImgURL"
+          class="border-2 border-gray-900 p-2 rounded-lg"
+        />
+      </article>
+
+      <button
+        class="mt-10 mx-0.5 px-5 py-3 text-sm bg-gray-900 text-white shadow rounded-md"
+      >
+        Add New Site
+      </button>
+
+      <button
+        class="mt-10 mx-0.5 px-5 py-3 text-sm border-sm border-2 border-gray-900 text-gray-900 shadow rounded-md"
+      >
+        Cancel
+      </button>
+    </form>
+  </section>
+
+  <section class="grid grid-cols-4 gap-5">
+    <article
+      *ngFor="let site of allSites$ | async"
+      class="shadow-lg border-2 border-gray-900"
+    >
+      <img [src]="site.siteImgURL" alt="goDadady picture" />
+      <h3 class="p-3 text-xl font-bold">{{ site.siteName }}</h3>
+
+      <div class="w-60 m-3 px-3 bg-blue-200 text-blue-800 rounded-lg text-sm">
+        {{ site.siteURL }}
+      </div>
+
+      <button
+        class="my-3 ml-3 mx-0.5 p-3 text-sm bg-gray-900 text-white shadow rounded-md"
+      >
+        Add New Password
+      </button>
+      <button
+        class="my-3 mx-0.5 p-3 text-sm border-2 border-gray-900 text-gray-900 shadow rounded-md"
+      >
+        Edit
+      </button>
+      <button
+        class="my-3 mx-0.5 p-3 text-sm border-2 border-gray-900 text-gray-900 shadow rounded-md"
+      >
+        Delete
+      </button>
+    </article>
+  </section>
+</div>
