@@ -3,7 +3,12 @@ import { NgForm } from '@angular/forms';
 import { Observable } from 'rxjs';
 
 import { PasswordManagerService } from '../../services/password-manager.service';
+import { editSiteDTO, ISite } from '../../models/site.model';
 
+enum FormState {
+  Add = 'Add',
+  Edit = 'Edit',
+}
 @Component({
   selector: 'app-site-list',
   templateUrl: './site-list.component.html',
@@ -11,9 +16,20 @@ import { PasswordManagerService } from '../../services/password-manager.service'
 })
 export class SiteListComponent implements OnInit {
   @ViewChild('myForm') myForm!: NgForm;
-  allSites$!: Observable<any>;
+  allSites$!: Observable<ISite[]>;
 
-  constructor(private passwordManagerService: PasswordManagerService) {}
+  initForm: ISite = {
+    id: '',
+    siteName: '',
+    siteURL: '',
+    siteImgURL: '',
+  };
+
+  formState: FormState;
+
+  constructor(private passwordManagerService: PasswordManagerService) {
+    this.formState = FormState.Add;
+  }
 
   ngOnInit() {
     this.loadSites();
@@ -24,15 +40,27 @@ export class SiteListComponent implements OnInit {
       return;
     }
     try {
-      await this.passwordManagerService.addSite(this.myForm.value);
-      this.myForm.reset();
-      console.log('Data Save Successfully');
+      if (this.formState == FormState.Add) {
+        await this.passwordManagerService.addSite(this.myForm.value);
+        this.myForm.reset();
+        console.log('Data Saved Successfully');
+      } else {
+        await this.passwordManagerService.updateSite(this.initForm);
+        this.myForm.reset();
+        console.log('Data Updated Successfully');
+      }
     } catch (error) {
       console.error(error);
     }
   }
 
   loadSites() {
-    this.allSites$ = this.passwordManagerService.loadSites();
+    this.allSites$ =
+      this.passwordManagerService.loadSites() as unknown as Observable<ISite[]>;
+  }
+
+  editSite(site: editSiteDTO) {
+    this.formState = FormState.Edit;
+    this.initForm = { ...this.initForm, ...site };
   }
 }
