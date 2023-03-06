@@ -1,9 +1,11 @@
 import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ISite } from '../../models/site.model';
 import { NgForm } from '@angular/forms';
+import { Subscription } from 'rxjs';
+
+import { ISite } from '../../models/site.model';
+import { CryptService } from '../../services/crypt.service';
 import { PasswordManagerService } from '../../services/password-manager.service';
-import { Observable } from 'rxjs';
 import { IPassword } from '../../models/password.model';
 
 enum FormState {
@@ -18,8 +20,9 @@ enum FormState {
 })
 export class PasswordListComponent {
   @ViewChild('myForm') myForm!: NgForm;
+  passwordSubscription = new Subscription();
   site!: ISite;
-  passwordList$!: Observable<IPassword[]>;
+  passwordList!: IPassword[];
   password: IPassword;
   formState: FormState;
   isSuccess = false;
@@ -27,6 +30,7 @@ export class PasswordListComponent {
 
   constructor(
     private route: ActivatedRoute,
+    private cryptService: CryptService,
     private passwordManagerService: PasswordManagerService
   ) {
     this.password = { id: '', email: '', username: '', password: '' };
@@ -51,10 +55,12 @@ export class PasswordListComponent {
       return;
     }
 
+    const encryptedPassword = this.encryptPassword(this.password.password);
+
     try {
       if (this.formState == FormState.Add) {
         await this.passwordManagerService.addPassword(
-          this.myForm.value,
+          { ...this.myForm.value, password: encryptedPassword },
           this.site.id
         );
         console.log('Password Saved');
@@ -76,9 +82,11 @@ export class PasswordListComponent {
 
   loadpassword() {
     if (this.site.id) {
-      this.passwordList$ = this.passwordManagerService.loadPasswords(
-        this.site.id
-      ) as unknown as Observable<IPassword[]>;
+      this.passwordSubscription = this.passwordManagerService
+        .loadPasswords(this.site.id)
+        .subscribe((list) => {
+          this.passwordList = list as IPassword[];
+        });
     }
   }
 
@@ -95,5 +103,22 @@ export class PasswordListComponent {
     } catch (error) {
       console.error(error);
     }
+  }
+
+  encryptPassword(password: string) {
+    return this.cryptService.encryptPassword(password);
+  }
+
+  decryptPassword(password: string) {
+    return this.cryptService.decryptPassword(password);
+  }
+
+  onDecrypt(password: string, index: number) {
+    const decPassword = this.decryptPassword(password);
+    this.passwordList[index].password = decPassword;
+  }
+
+  ngOnDestroy() {
+    this.passwordSubscription.unsubscribe();
   }
 }

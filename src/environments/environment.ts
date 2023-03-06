@@ -8,4 +8,5 @@ export const environment = {
     messagingSenderId: '81589845259',
   },
   production: true,
+  secretKey: 'QeThWmZq3t6w9z$C&F)J@NcRfUjXn2r5',
 };
