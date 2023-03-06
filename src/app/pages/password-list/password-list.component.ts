@@ -22,6 +22,8 @@ export class PasswordListComponent {
   passwordList$!: Observable<IPassword[]>;
   password: IPassword;
   formState: FormState;
+  isSuccess = false;
+  successMessage: string | undefined;
 
   constructor(
     private route: ActivatedRoute,
@@ -39,6 +41,11 @@ export class PasswordListComponent {
     this.loadpassword();
   }
 
+  showAlert(message: string) {
+    this.isSuccess = true;
+    this.successMessage = message;
+  }
+
   async onSubmit() {
     if (this.myForm.invalid) {
       return;
@@ -51,6 +58,7 @@ export class PasswordListComponent {
           this.site.id
         );
         console.log('Password Saved');
+        this.showAlert('Password Saved');
       } else {
         await this.passwordManagerService.updatePassword(
           this.site.id,
@@ -58,6 +66,7 @@ export class PasswordListComponent {
         );
         this.formState = FormState.Add;
         console.log('Password updated');
+        this.showAlert('Password updated');
       }
       this.myForm.reset();
     } catch (error) {
@@ -76,5 +85,15 @@ export class PasswordListComponent {
   editPassword(password: IPassword) {
     this.password = password;
     this.formState = FormState.Edit;
+  }
+
+  async deletePassword(id: string) {
+    try {
+      await this.passwordManagerService.deletePassword(this.site.id, id);
+      this.showAlert('Password deleted');
+      console.log('Password deleted');
+    } catch (error) {
+      console.error(error);
+    }
   }
 }

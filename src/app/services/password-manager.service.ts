@@ -70,4 +70,13 @@ export class PasswordManagerService {
     );
     return updateDoc(docInstance, data);
   }
+
+  deletePassword(siteId: string, passwordId: string) {
+    const docInstance = doc(
+      this.firestore,
+      `${this.sitesCollection}/${siteId}/${this.passwordCollection}`,
+      passwordId
+    );
+    return deleteDoc(docInstance);
+  }
 }
