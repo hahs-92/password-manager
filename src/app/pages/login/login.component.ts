@@ -1,5 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
+
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -15,7 +17,7 @@ export class LoginComponent {
     password: '',
   };
 
-  constructor(private authService: AuthService) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   async onSubmit() {
     if (this.myForm.invalid) {
@@ -28,6 +30,7 @@ export class LoginComponent {
         this.initialForm.password
       );
       console.log('Login Success');
+      this.router.navigate(['/site-list']);
     } catch (error) {
       console.error(error);
     }
