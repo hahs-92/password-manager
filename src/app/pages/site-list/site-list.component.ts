@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 import { PasswordManagerService } from '../../services/password-manager.service';
 import { editSiteDTO, ISite } from '../../models/site.model';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 enum FormState {
   Add = 'Add',
@@ -26,20 +27,16 @@ export class SiteListComponent implements OnInit {
   };
 
   formState: FormState;
-  isSuccess = false;
-  successMessage: string | undefined;
 
-  constructor(private passwordManagerService: PasswordManagerService) {
+  constructor(
+    private _snackBar: MatSnackBar,
+    private passwordManagerService: PasswordManagerService
+  ) {
     this.formState = FormState.Add;
   }
 
   ngOnInit() {
     this.loadSites();
-  }
-
-  showAlert(message: string) {
-    this.isSuccess = true;
-    this.successMessage = message;
   }
 
   async onSubmit() {
@@ -50,18 +47,15 @@ export class SiteListComponent implements OnInit {
       if (this.formState == FormState.Add) {
         await this.passwordManagerService.addSite(this.myForm.value);
         this.myForm.reset();
-        this.showAlert('Data Saved Sucessfully');
-        console.log('Data Saved Successfully');
+        this.openSnackBar('Data Saved Successfully', 'Ok');
       } else {
         await this.passwordManagerService.updateSite(this.initForm);
         this.myForm.reset();
-        this.showAlert('Data Edit Sucessfully');
+        this.openSnackBar('Data Updated Successfully', 'Ok');
         this.formState = FormState.Add;
-        console.log('Data Updated Successfully');
       }
     } catch (error) {
       console.error(error);
-      this.isSuccess = false;
     }
   }
 
@@ -78,10 +72,13 @@ export class SiteListComponent implements OnInit {
   async deleteSite(id: string) {
     try {
       await this.passwordManagerService.deleteSite(id);
-      this.showAlert('Data Deleted Sucessfully');
-      console.log('Site deleted');
+      this.openSnackBar('Data Deleted Successfully', 'Ok');
     } catch (error) {
       console.error(error);
     }
+  }
+
+  openSnackBar(message: string, action: string) {
+    this._snackBar.open(message, action);
   }
 }

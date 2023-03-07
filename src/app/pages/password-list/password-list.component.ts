@@ -2,6 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgForm } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { ISite } from '../../models/site.model';
 import { CryptService } from '../../services/crypt.service';
@@ -25,11 +26,10 @@ export class PasswordListComponent {
   passwordList!: IPassword[];
   password: IPassword;
   formState: FormState;
-  isSuccess = false;
-  successMessage: string | undefined;
 
   constructor(
     private route: ActivatedRoute,
+    private _snackBar: MatSnackBar,
     private cryptService: CryptService,
     private passwordManagerService: PasswordManagerService
   ) {
@@ -45,11 +45,6 @@ export class PasswordListComponent {
     this.loadpassword();
   }
 
-  showAlert(message: string) {
-    this.isSuccess = true;
-    this.successMessage = message;
-  }
-
   async onSubmit() {
     if (this.myForm.invalid) {
       return;
@@ -63,16 +58,14 @@ export class PasswordListComponent {
           { ...this.myForm.value, password: encryptedPassword },
           this.site.id
         );
-        console.log('Password Saved');
-        this.showAlert('Password Saved');
+        this.openSnackBar('Data Saved Successfully', 'Ok');
       } else {
         await this.passwordManagerService.updatePassword(
           this.site.id,
           this.password
         );
         this.formState = FormState.Add;
-        console.log('Password updated');
-        this.showAlert('Password updated');
+        this.openSnackBar('Data Updated Successfully', 'Ok');
       }
       this.myForm.reset();
     } catch (error) {
@@ -98,8 +91,7 @@ export class PasswordListComponent {
   async deletePassword(id: string) {
     try {
       await this.passwordManagerService.deletePassword(this.site.id, id);
-      this.showAlert('Password deleted');
-      console.log('Password deleted');
+      this.openSnackBar('Data Deleted Successfully', 'Ok');
     } catch (error) {
       console.error(error);
     }
@@ -116,6 +108,10 @@ export class PasswordListComponent {
   onDecrypt(password: string, index: number) {
     const decPassword = this.decryptPassword(password);
     this.passwordList[index].password = decPassword;
+  }
+
+  openSnackBar(message: string, action: string) {
+    this._snackBar.open(message, action);
   }
 
   ngOnDestroy() {
