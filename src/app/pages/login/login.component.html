@@ -42,6 +42,11 @@
             Sign in
           </button>
         </form>
+        <span
+          class="block w-full h-8 text-center text-white bg-red-500"
+          *ngIf="isError"
+          >Wrong Credentials¡¡</span
+        >
       </div>
     </article>
   </section>

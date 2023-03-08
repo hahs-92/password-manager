@@ -28,6 +28,7 @@ export class PasswordListComponent {
   passwordList!: IPassword[];
   password: IPassword;
   formState: FormState;
+  decrypt = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -53,7 +54,9 @@ export class PasswordListComponent {
       return;
     }
 
-    const encryptedPassword = this.encryptPassword(this.password.password);
+    const encryptedPassword = this.cryptService.encryptPassword(
+      this.password.password
+    );
 
     try {
       if (this.formState == FormState.Add) {
@@ -108,17 +111,17 @@ export class PasswordListComponent {
     });
   }
 
-  encryptPassword(password: string) {
-    return this.cryptService.encryptPassword(password);
-  }
-
-  decryptPassword(password: string) {
-    return this.cryptService.decryptPassword(password);
-  }
-
   onDecrypt(password: string, index: number) {
-    const decPassword = this.decryptPassword(password);
-    this.passwordList[index].password = decPassword;
+    if (!this.decrypt) {
+      const decPassword = this.cryptService.decryptPassword(password);
+      this.passwordList[index].password = decPassword;
+      this.decrypt = true;
+      return;
+    }
+
+    const unPassword = this.cryptService.encryptPassword(password);
+    this.passwordList[index].password = unPassword;
+    this.decrypt = false;
   }
 
   openSnackBar(message: string, action: string) {

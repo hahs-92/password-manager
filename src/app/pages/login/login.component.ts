@@ -12,6 +12,7 @@ import { AuthService } from '../../services/auth.service';
 export class LoginComponent {
   @ViewChild('myForm') myForm!: NgForm;
 
+  isError = false;
   initialForm = {
     email: '',
     password: '',
@@ -30,9 +31,11 @@ export class LoginComponent {
         this.initialForm.password
       );
       console.log('Login Success');
+      this.isError = false;
       this.router.navigate(['/site-list']);
     } catch (error) {
-      console.error(error);
+      console.error('LOGIN: ', error);
+      this.isError = true;
     }
   }
 }
