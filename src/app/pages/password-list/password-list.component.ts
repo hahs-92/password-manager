@@ -3,11 +3,13 @@ import { ActivatedRoute } from '@angular/router';
 import { NgForm } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 
 import { ISite } from '../../models/site.model';
 import { CryptService } from '../../services/crypt.service';
 import { PasswordManagerService } from '../../services/password-manager.service';
 import { IPassword } from '../../models/password.model';
+import { DialogComponent } from '../../components/dialog/dialog.component';
 
 enum FormState {
   Add = 'Add',
@@ -30,6 +32,7 @@ export class PasswordListComponent {
   constructor(
     private route: ActivatedRoute,
     private _snackBar: MatSnackBar,
+    private dialog: MatDialog,
     private cryptService: CryptService,
     private passwordManagerService: PasswordManagerService
   ) {
@@ -89,12 +92,20 @@ export class PasswordListComponent {
   }
 
   async deletePassword(id: string) {
-    try {
-      await this.passwordManagerService.deletePassword(this.site.id, id);
-      this.openSnackBar('Data Deleted Successfully', 'Ok');
-    } catch (error) {
-      console.error(error);
-    }
+    const dialogRef = this.dialog.open(DialogComponent, {
+      width: '250px',
+    });
+
+    dialogRef.afterClosed().subscribe(async (result) => {
+      if (!result) return;
+
+      try {
+        await this.passwordManagerService.deletePassword(this.site.id, id);
+        this.openSnackBar('Data Deleted Successfully', 'Ok');
+      } catch (error) {
+        console.error(error);
+      }
+    });
   }
 
   encryptPassword(password: string) {

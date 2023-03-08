@@ -16,6 +16,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { SiteListComponent } from './pages/site-list/site-list.component';
 import { PasswordListComponent } from './pages/password-list/password-list.component';
 import { LoginComponent } from './pages/login/login.component';
+import { DialogComponent } from './components/dialog/dialog.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { LoginComponent } from './pages/login/login.component';
     SiteListComponent,
     PasswordListComponent,
     LoginComponent,
+    DialogComponent,
   ],
   imports: [
     BrowserModule,
